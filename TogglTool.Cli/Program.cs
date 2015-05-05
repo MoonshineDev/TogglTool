@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TogglTool.Api;
 
 namespace TogglTool.Cli
 {
@@ -40,26 +41,30 @@ namespace TogglTool.Cli
 
         public void Run()
         {
-            var togglApiKey = _options.TogglApiKey;
+            AssureTogglApiKey();
+            TogglApi.Create(_options.TogglApiKey);
+        }
+
+        /// <summary>
+        /// Interacts with the windows registry in order to set and retreive the API key for Toggl.
+        /// </summary>
+        private void AssureTogglApiKey()
+        {
             var reg = default(RegistryKey);
             #region Store windows registry values
-            if (_options.StoreApiKeys && !string.IsNullOrEmpty(togglApiKey))
+            if (_options.StoreApiKeys && !string.IsNullOrEmpty(_options.TogglApiKey))
             {
                 reg = reg ?? Registry.CurrentUser.CreateSubKey(_regname);
                 if (reg != null)
-                {
-                    reg.SetValue(_regkey_togglapikey, togglApiKey);
-                }
+                    reg.SetValue(_regkey_togglapikey, _options.TogglApiKey);
             }
             #endregion
             #region Load windows registry values
-            if (string.IsNullOrEmpty(togglApiKey))
+            if (string.IsNullOrEmpty(_options.TogglApiKey))
             {
                 reg = reg ?? Registry.CurrentUser.OpenSubKey(_regname);
                 if (reg != null)
-                {
-                    var val = reg.GetValue(_regkey_togglapikey);
-                }
+                    _options.TogglApiKey = (string)reg.GetValue(_regkey_togglapikey);
             }
             #endregion
         }

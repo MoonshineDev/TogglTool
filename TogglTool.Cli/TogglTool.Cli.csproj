@@ -53,6 +53,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TogglTool.Api\TogglTool.Api.csproj">
+      <Project>{a84ad58f-e6f9-4035-a4ca-177b2ab6e045}</Project>
+      <Name>TogglTool.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

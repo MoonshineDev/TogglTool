@@ -9,6 +9,7 @@ namespace TogglTool.Api
     public class TogglApi
     {
         private string ApiKey { get; set; }
+        private readonly string _baseurl = "https://www.toggl.com/api/";
 
         #region .ctor
         private TogglApi(string apiKey)

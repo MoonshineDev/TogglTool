@@ -59,7 +59,7 @@ namespace TogglTool.Api
                 .GetProperties()
                 .ToDictionary(
                     x => x.Name.ToLower(),
-                    x => x.GetValue().ToString(),
+                    x => x.GetValue(this).ToString()
                 );
         }
     }

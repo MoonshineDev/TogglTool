@@ -42,7 +42,9 @@ namespace TogglTool.Cli
         public void Run()
         {
             AssureTogglApiKey();
-            TogglApi.Create(_options.TogglApiKey);
+            var toggl = TogglApi.Create(_options.TogglApiKey);
+            var workspacesApi = toggl.Workspaces;
+            workspacesApi.GetWorkspaces();
         }
 
         /// <summary>

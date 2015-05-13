@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TogglTool.Api.Models;
 
 namespace TogglTool.Api
 {
@@ -26,11 +27,24 @@ namespace TogglTool.Api
         }
         #endregion
 
-        public void GetWorkspaces()
+        public List<Workspace> GetWorkspaces(bool includeClients = false)
         {
             var url = "v8/workspaces";
             var query = new Dictionary<string, string>();
-            Api.Call(url, query);
+            var workspaces = Api.Call<List<Workspace>>(url, query);
+            if (includeClients)
+                workspaces.ForEach(x => GetWorkspaceClients(x));
+            return workspaces;
+        }
+
+        public List<WorkspaceClient> GetWorkspaceClients(Workspace workspace)
+        {
+            var url = string.Format("v8/workspaces/{0}/clients", workspace.id);
+            var query = new Dictionary<string, string>();
+            var workspaceClients = Api.Call<List<WorkspaceClient>>(url, query);
+            workspace.WorkspaceClientList = workspaceClients;
+            workspaceClients.ForEach(x => x.Workspace = workspace);
+            return workspaceClients;
         }
     }
 }

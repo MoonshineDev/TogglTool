@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,14 +18,10 @@ namespace TogglTool.Api
         private string ApiKey { get; set; }
         private readonly string _baseurl = "https://www.toggl.com/api/";
 
-        private DetailedReportApi _detailedReport;
+        public string UserAgent { get; private set; }
+
         private TimeEntriesApi _timeEntries;
         private WorkspacesApi _workspaces;
-        public DetailedReportApi DetailedReport { get {
-            if (_detailedReport == null)
-                _detailedReport = DetailedReportApi.Create(this);
-            return _detailedReport;
-        } }
         public TimeEntriesApi TimeEntries { get {
             if (_timeEntries == null)
                 _timeEntries = TimeEntriesApi.Create(this);
@@ -36,40 +34,48 @@ namespace TogglTool.Api
         } }
 
         #region .ctor
-        private TogglApi(string apiKey)
+        private TogglApi(string apiKey, string userAgent)
         {
             ApiKey = apiKey;
+            UserAgent = userAgent;
         }
         #endregion
 
         #region Create
-        public static TogglApi Create(string apiKey)
+        public static TogglApi Create(string apiKey, string userAgent)
         {
             if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentException();
-            return new TogglApi(apiKey);
+                throw new ArgumentException("apiKey");
+            if (string.IsNullOrEmpty(userAgent))
+                throw new ArgumentException("userAgent");
+            return new TogglApi(apiKey, userAgent);
         }
         #endregion
 
-        public void Call(string url, params KeyValuePair<string, string>[] query)
+        public T Call<T>(string url, params KeyValuePair<string, string>[] query)
+            where T : class
         {
             var query2 = query.ToDictionary(x => x.Key, x => x.Value);
-            Call(url, query2);
+            return Call<T>(url, query2);
         }
 
-        public void Call(string url, IDictionary<string, string> query)
+        public T Call<T>(string url, IDictionary<string, string> query)
+            where T : class
         {
-            var task = CallAsync(url, query);
+            var task = CallAsync<T>(url, query);
             task.Wait();
+            return task.Result;
         }
 
-        public async Task CallAsync(string url, params KeyValuePair<string, string>[] query)
+        public async Task<T> CallAsync<T>(string url, params KeyValuePair<string, string>[] query)
+            where T : class
         {
             var query2 = query.ToDictionary(x => x.Key, x => x.Value);
-            await CallAsync(url, query2);
+            return await CallAsync<T>(url, query2);
         }
 
-        public async Task CallAsync(string url, IDictionary<string, string> query)
+        public async Task<T> CallAsync<T>(string url, IDictionary<string, string> query)
+            where T : class
         {
             url = _baseurl + Regex.Replace(url, @"^[\/]*", "");
             var uriBuilder = new UriBuilder(url);
@@ -83,20 +89,18 @@ namespace TogglTool.Api
                 var byteArray = Encoding.ASCII.GetBytes(ApiKey + ":api_token");
                 var authHeader = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                 httpClient.DefaultRequestHeaders.Authorization = authHeader;
-                Console.WriteLine("--> {0}", uri);
                 var response = await httpClient.GetAsync(uri);
-                Console.WriteLine("{0} {1}", response.StatusCode.ToString(), (int)response.StatusCode);
-                var content = response.Content;
-                var str = await content.ReadAsStringAsync();
-                switch (response.StatusCode)
+                var code = response.StatusCode;
+                var content = default(string);
+                Console.WriteLine("{0} {1} {2}", (int)code, code.ToString(), uri);
+                switch (code)
                 {
                     case HttpStatusCode.OK:
-                        //var content = response.Content;
-                        //var str = await content.ReadAsStringAsync();
-                        Console.WriteLine(str);
-                        break;
+                        content = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<T>(content);
                     default:
-                        throw new HttpRequestException("Unhandled HTTP status code " + response.StatusCode);
+                        content = await response.Content.ReadAsStringAsync();
+                        throw new HttpRequestException("Unhandled HTTP status code " + (int)code + " " + response.StatusCode);
                 }
             }
         }

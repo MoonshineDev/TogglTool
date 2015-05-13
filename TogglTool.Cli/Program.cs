@@ -14,6 +14,7 @@ namespace TogglTool.Cli
         private readonly Options _options;
         private readonly string _regname = @"Software\TogglTool";
         private readonly string _regkey_togglapikey = @"TogglApiKey";
+        private readonly string _userAgent = "TogglTool";
 
         #region .ctor
         private Program(Options options)
@@ -42,9 +43,17 @@ namespace TogglTool.Cli
         public void Run()
         {
             AssureTogglApiKey();
-            var toggl = TogglApi.Create(_options.TogglApiKey);
+            var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent);
             var workspacesApi = toggl.Workspaces;
-            workspacesApi.GetWorkspaces();
+            var workspaces = workspacesApi.GetWorkspaces(true);
+            foreach (var client in workspaces.SelectMany(x => x.WorkspaceClientList))
+            {
+                Console.WriteLine("WorkspaceClient Id: {0}", client.id);
+                Console.WriteLine("WorkspaceClient Name: {0}", client.name);
+            }
+            var since = DateTime.MinValue;
+            var timeEntriesApi = toggl.TimeEntries;
+            var timeEntries = timeEntriesApi.GetTimeEntries(since);
         }
 
         /// <summary>

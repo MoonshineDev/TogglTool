@@ -27,24 +27,48 @@ namespace TogglTool.Api
         }
         #endregion
 
-        public List<Workspace> GetWorkspaces(bool includeClients = false)
+        public List<Workspace> GetWorkspaces(bool includeClients = false, bool includeProjects = false)
         {
             var url = "v8/workspaces";
             var query = new Dictionary<string, string>();
             var workspaces = Api.Call<List<Workspace>>(url, query);
             if (includeClients)
                 workspaces.ForEach(x => GetWorkspaceClients(x));
+            if (includeProjects)
+                workspaces.ForEach(x => GetWorkspaceProjects(x));
             return workspaces;
         }
 
-        public List<WorkspaceClient> GetWorkspaceClients(Workspace workspace)
+        public List<Client> GetWorkspaceClients(Workspace workspace)
         {
             var url = string.Format("v8/workspaces/{0}/clients", workspace.id);
             var query = new Dictionary<string, string>();
-            var workspaceClients = Api.Call<List<WorkspaceClient>>(url, query);
-            workspace.WorkspaceClientList = workspaceClients;
-            workspaceClients.ForEach(x => x.Workspace = workspace);
-            return workspaceClients;
+            var clients = Api.Call<List<Client>>(url, query);
+            clients.ForEach(x => {
+                workspace.ClientList.Add(x);
+                x.Workspace = workspace;
+                foreach (var project in workspace.ProjectList.Where(y => y.cid == x.id))
+                {
+                    x.ProjectList.Add(project);
+                    project.Client = x;
+                }
+            });
+            return clients;
+        }
+
+        public List<Project> GetWorkspaceProjects(Workspace workspace)
+        {
+            var url = string.Format("v8/workspaces/{0}/projects", workspace.id);
+            var query = new Dictionary<string, string>();
+            var projects = Api.Call<List<Project>>(url, query);
+            projects.ForEach(x => {
+                workspace.ProjectList.Add(x);
+                x.Workspace = workspace;
+                x.Client = workspace.ClientList.FirstOrDefault(y => y.id == x.cid);
+                if (x.Client != null)
+                    x.Client.ProjectList.Add(x);
+            });
+            return projects;
         }
     }
 }

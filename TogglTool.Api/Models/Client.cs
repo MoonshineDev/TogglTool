@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class WorkspaceClient
+    public class Client
     {
+        #region ctor
+        public Client()
+        {
+            ProjectList = new List<Project>();
+        }
+        #endregion
+
         public int id { get; set; }
         public string name { get; set; }
         public DateTime at { get; set; }
@@ -18,6 +25,8 @@ namespace TogglTool.Api.Models
         #region Navigation properties
         public int wid { get; set; }
         public Workspace Workspace { get; set; }
+
+        public IList<Project> ProjectList { get; private set; }
         #endregion
     }
 }

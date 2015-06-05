@@ -8,6 +8,14 @@ namespace TogglTool.Api.Models
 {
     public class Workspace
     {
+        #region ctor
+        public Workspace()
+        {
+            ClientList = new List<Client>();
+            ProjectList = new List<Project>();
+        }
+        #endregion
+
         public int id { get; set; }
         public string name { get; set; }
         public bool premium { get; set; }
@@ -26,7 +34,8 @@ namespace TogglTool.Api.Models
         public bool ical_enabled { get; set; }
 
         #region Navigation properties
-        public IList<WorkspaceClient> WorkspaceClientList { get; set; }
+        public IList<Client> ClientList { get; private set; }
+        public IList<Project> ProjectList { get; private set; }
         #endregion
     }
 }

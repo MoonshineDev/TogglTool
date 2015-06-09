@@ -8,6 +8,13 @@ namespace TogglTool.Api.Models
 {
     public class Project
     {
+        #region .ctor
+        public Project()
+        {
+            TimeEntryList = new List<TimeEntry>();
+        }
+        #endregion
+
         public int id { get; set; }
         public Guid? guid { get; set; }
         public string name { get; set; }
@@ -27,6 +34,8 @@ namespace TogglTool.Api.Models
 
         public int cid { get; set; }
         public Client Client { get; set; }
+
+        public IList<TimeEntry> TimeEntryList { get; set; }
         #endregion
     }
 }

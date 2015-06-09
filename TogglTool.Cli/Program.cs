@@ -45,15 +45,16 @@ namespace TogglTool.Cli
             AssureTogglApiKey();
             var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent);
             var workspacesApi = toggl.Workspaces;
-            var workspaces = workspacesApi.GetWorkspaces(true, true);
-            foreach (var client in workspaces.SelectMany(x => x.ClientList))
+            var workspace = workspacesApi.GetWorkspaces(true, true).FirstOrDefault();
+            foreach (var client in workspace.ClientList)
             {
-                Console.WriteLine("WorkspaceClient Id: {0}", client.id);
-                Console.WriteLine("WorkspaceClient Name: {0}", client.name);
+                Console.WriteLine("Client Id: {0}", client.id);
+                Console.WriteLine("Client Name: {0}", client.name);
             }
             var since = DateTime.MinValue;
             var timeEntriesApi = toggl.TimeEntries;
             var timeEntries = timeEntriesApi.GetTimeEntries(since);
+            WorkspacesApi.AttachTimeEntries(workspace, timeEntries);
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace TogglTool.Api.Models
         {
             ClientList = new List<Client>();
             ProjectList = new List<Project>();
+            TimeEntryList = new List<TimeEntry>();
         }
         #endregion
 
@@ -36,6 +37,7 @@ namespace TogglTool.Api.Models
         #region Navigation properties
         public IList<Client> ClientList { get; private set; }
         public IList<Project> ProjectList { get; private set; }
+        public IList<TimeEntry> TimeEntryList { get; private set; }
         #endregion
     }
 }

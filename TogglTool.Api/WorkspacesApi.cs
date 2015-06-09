@@ -27,6 +27,52 @@ namespace TogglTool.Api
         }
         #endregion
 
+        public static void AttachClients(Workspace workspace, ICollection<Client> clients)
+        {
+            foreach (var client in clients)
+            {
+                workspace.ClientList.Add(client);
+                client.Workspace = workspace;
+                foreach (var project in workspace.ProjectList.Where(x => x.cid == client.id))
+                {
+                    client.ProjectList.Add(project);
+                    project.Client = client;
+                }
+            }
+        }
+
+        public static void AttachProjects(Workspace workspace, ICollection<Project> projects)
+        {
+            foreach (var project in projects)
+            {
+                workspace.ProjectList.Add(project);
+                project.Workspace = workspace;
+                project.Client = workspace.ClientList.FirstOrDefault(x => x.id == project.cid);
+                if (project.Client != null)
+                    project.Client.ProjectList.Add(project);
+                foreach (var timeEntry in workspace.TimeEntryList.Where(x => x.pid.HasValue && x.pid.Value == project.id))
+                {
+                    project.TimeEntryList.Add(timeEntry);
+                    timeEntry.Project = project;
+                }
+            }
+        }
+
+        public static void AttachTimeEntries(Workspace workspace, ICollection<TimeEntry> timeEntries)
+        {
+            foreach(var timeEntry in timeEntries)
+            {
+                workspace.TimeEntryList.Add(timeEntry);
+                timeEntry.Workspace = workspace;
+                if (timeEntry.pid.HasValue)
+                {
+                    timeEntry.Project = workspace.ProjectList.FirstOrDefault(x => x.id == timeEntry.pid.Value);
+                    if (timeEntry.Project != null)
+                        timeEntry.Project.TimeEntryList.Add(timeEntry);
+                }
+            }
+        }
+
         public List<Workspace> GetWorkspaces(bool includeClients = false, bool includeProjects = false)
         {
             var url = "v8/workspaces";
@@ -44,15 +90,7 @@ namespace TogglTool.Api
             var url = string.Format("v8/workspaces/{0}/clients", workspace.id);
             var query = new Dictionary<string, string>();
             var clients = Api.Call<List<Client>>(url, query);
-            clients.ForEach(x => {
-                workspace.ClientList.Add(x);
-                x.Workspace = workspace;
-                foreach (var project in workspace.ProjectList.Where(y => y.cid == x.id))
-                {
-                    x.ProjectList.Add(project);
-                    project.Client = x;
-                }
-            });
+            AttachClients(workspace, clients);
             return clients;
         }
 
@@ -61,13 +99,7 @@ namespace TogglTool.Api
             var url = string.Format("v8/workspaces/{0}/projects", workspace.id);
             var query = new Dictionary<string, string>();
             var projects = Api.Call<List<Project>>(url, query);
-            projects.ForEach(x => {
-                workspace.ProjectList.Add(x);
-                x.Workspace = workspace;
-                x.Client = workspace.ClientList.FirstOrDefault(y => y.id == x.cid);
-                if (x.Client != null)
-                    x.Client.ProjectList.Add(x);
-            });
+            AttachProjects(workspace, projects);
             return projects;
         }
     }

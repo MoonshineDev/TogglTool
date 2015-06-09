@@ -22,7 +22,11 @@ namespace TogglTool.Api.Models
 
         #region Navigation properties
         public int wid { get; set; }
+        public Workspace Workspace { get; set; }
+
         public int? pid { get; set; }
+        public Project Project { get; set; }
+
         public int? tid { get; set; }
         public int? uid { get; set; }
         #endregion

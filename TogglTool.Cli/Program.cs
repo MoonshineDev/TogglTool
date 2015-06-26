@@ -45,7 +45,7 @@ namespace TogglTool.Cli
             AssureTogglApiKey();
             var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent);
             var workspacesApi = toggl.Workspaces;
-            var workspace = workspacesApi.GetWorkspaces(true, true).FirstOrDefault();
+            var workspace = workspacesApi.GetWorkspaces(WorkspaceOption.IncludeClientsAndProjects).FirstOrDefault();
             foreach (var client in workspace.ClientList)
             {
                 Console.WriteLine("Client Id: {0}", client.id);

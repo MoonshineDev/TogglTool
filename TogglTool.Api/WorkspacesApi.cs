@@ -73,14 +73,14 @@ namespace TogglTool.Api
             }
         }
 
-        public List<Workspace> GetWorkspaces(bool includeClients = false, bool includeProjects = false)
+        public List<Workspace> GetWorkspaces(WorkspaceOption option = WorkspaceOption.OnlyWorkspaces)
         {
             var url = "v8/workspaces";
             var query = new Dictionary<string, string>();
             var workspaces = Api.Call<List<Workspace>>(url, query);
-            if (includeClients)
+            if ((option & WorkspaceOption.IncludeClients) != 0)
                 workspaces.ForEach(x => GetWorkspaceClients(x));
-            if (includeProjects)
+            if ((option & WorkspaceOption.IncludeProjects) != 0)
                 workspaces.ForEach(x => GetWorkspaceProjects(x));
             return workspaces;
         }

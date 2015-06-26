@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class Client
+    public class Client : BaseEntity
     {
         #region ctor
         public Client()
@@ -26,7 +26,7 @@ namespace TogglTool.Api.Models
         public int wid { get; set; }
         public Workspace Workspace { get; set; }
 
-        public IList<Project> ProjectList { get; private set; }
+        public virtual IList<Project> ProjectList { get; private set; }
         #endregion
     }
 }

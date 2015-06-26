@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class TimeEntry
+    public class TimeEntry : BaseEntity
     {
         public int id { get; set; }
         public Guid guid { get; set; }

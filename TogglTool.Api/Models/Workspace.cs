@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class Workspace
+    public class Workspace : BaseEntity
     {
         #region ctor
         public Workspace()
@@ -35,9 +35,9 @@ namespace TogglTool.Api.Models
         public bool ical_enabled { get; set; }
 
         #region Navigation properties
-        public IList<Client> ClientList { get; private set; }
-        public IList<Project> ProjectList { get; private set; }
-        public IList<TimeEntry> TimeEntryList { get; private set; }
+        public virtual IList<Client> ClientList { get; private set; }
+        public virtual IList<Project> ProjectList { get; private set; }
+        public virtual IList<TimeEntry> TimeEntryList { get; private set; }
         #endregion
     }
 }

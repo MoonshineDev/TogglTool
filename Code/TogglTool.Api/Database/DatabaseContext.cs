@@ -18,7 +18,8 @@ namespace TogglTool.Api.Database
 
         public DatabaseContext()
             : this(GetDefaultConnectionString())
-        { }
+        {
+        }
 
         public DatabaseContext(string nameOrConnectionString)
             : base(nameOrConnectionString)

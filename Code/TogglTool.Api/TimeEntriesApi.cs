@@ -37,7 +37,7 @@ namespace TogglTool.Api
             // 2013-03-10T15:42:46
             query.Add("start_date", start.ToString("yyyy-MM-ddTHH:mm:ssZ"));
             query.Add("end_date", end.ToString("yyyy-MM-ddTHH:mm:ssZ"));
-            var timeEntries = Api.Call<List<TimeEntry>>(url, query);
+            var timeEntries = Api.Call<TimeEntry>(url, query);
             return timeEntries;
         }
     }

@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using TogglTool.Api.Database.Repository;
+using TogglTool.Api.Models;
 
 namespace TogglTool.Api
 {
@@ -20,6 +22,7 @@ namespace TogglTool.Api
 
         public string UserAgent { get; private set; }
 
+        private IBaseRepository _baseRepository;
         private TimeEntriesApi _timeEntries;
         private WorkspacesApi _workspaces;
         public TimeEntriesApi TimeEntries { get {
@@ -34,48 +37,49 @@ namespace TogglTool.Api
         } }
 
         #region .ctor
-        private TogglApi(string apiKey, string userAgent)
+        private TogglApi(string apiKey, string userAgent, IBaseRepository baseRepository)
         {
             ApiKey = apiKey;
             UserAgent = userAgent;
+            _baseRepository = baseRepository;
         }
         #endregion
 
         #region Create
-        public static TogglApi Create(string apiKey, string userAgent)
+        public static TogglApi Create(string apiKey, string userAgent, IBaseRepository baseRepository)
         {
             if (string.IsNullOrEmpty(apiKey))
                 throw new ArgumentException("apiKey");
             if (string.IsNullOrEmpty(userAgent))
                 throw new ArgumentException("userAgent");
-            return new TogglApi(apiKey, userAgent);
+            return new TogglApi(apiKey, userAgent, baseRepository);
         }
         #endregion
 
-        public T Call<T>(string url, params KeyValuePair<string, string>[] query)
-            where T : class
+        public List<T> Call<T>(string url, params KeyValuePair<string, string>[] query)
+            where T : TogglEntity
         {
             var query2 = query.ToDictionary(x => x.Key, x => x.Value);
             return Call<T>(url, query2);
         }
 
-        public T Call<T>(string url, IDictionary<string, string> query)
-            where T : class
+        public List<T> Call<T>(string url, IDictionary<string, string> query)
+            where T : TogglEntity
         {
             var task = CallAsync<T>(url, query);
             task.Wait();
             return task.Result;
         }
 
-        public async Task<T> CallAsync<T>(string url, params KeyValuePair<string, string>[] query)
-            where T : class
+        public async Task<List<T>> CallAsync<T>(string url, params KeyValuePair<string, string>[] query)
+            where T : TogglEntity
         {
             var query2 = query.ToDictionary(x => x.Key, x => x.Value);
             return await CallAsync<T>(url, query2);
         }
 
-        public async Task<T> CallAsync<T>(string url, IDictionary<string, string> query)
-            where T : class
+        public async Task<List<T>> CallAsync<T>(string url, IDictionary<string, string> query)
+            where T : TogglEntity
         {
             url = _baseurl + Regex.Replace(url, @"^[\/]*", "");
             var uriBuilder = new UriBuilder(url);
@@ -97,7 +101,10 @@ namespace TogglTool.Api
                 {
                     case HttpStatusCode.OK:
                         content = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<T>(content);
+                        var list = JsonConvert.DeserializeObject<List<T>>(content);
+                        _baseRepository.AddOrUpdate(list);
+                        _baseRepository.SaveChanges();
+                        return list;
                     default:
                         content = await response.Content.ReadAsStringAsync();
                         throw new HttpRequestException("Unhandled HTTP status code " + (int)code + " " + response.StatusCode);

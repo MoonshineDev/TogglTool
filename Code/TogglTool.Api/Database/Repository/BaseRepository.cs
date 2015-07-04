@@ -18,10 +18,28 @@ namespace TogglTool.Api.Database.Repository
             _dbContext = dbContext;
         }
 
+        public void AddOrUpdate<T>(ICollection<T> entities)
+            where T : TogglEntity
+        {
+            var set = _dbContext.Set<T>();
+            var dbEntities = GetByIds<T>(entities.Select(x => x.id).ToArray()).ToArray();
+            var dbIds = dbEntities.Select(x => x.id).ToArray();
+            var toBeAdded = entities.Where(x => !dbIds.Contains(x.id));
+            var toBeUpdated = entities.Where(x => dbIds.Contains(x.id));
+            set.AddRange(toBeAdded);
+            foreach (var entity in toBeUpdated)
+                entity.Update(entities.FirstOrDefault(x => x.id == entity.id));
+        }
+
         public IEnumerable<T> GetByIds<T>(ICollection<int> idList)
             where T : TogglEntity
         {
             return _dbContext.Set<T>().Where(x => idList.Contains(x.id));
+        }
+
+        public int SaveChanges()
+        {
+            return _dbContext.SaveChanges();
         }
 
         public IEnumerable<T> Where<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, bool>>[] morePredicates)

@@ -38,6 +38,12 @@ namespace TogglTool.Tests.Api.Database
         {
         }
 
+        [Test]
+        [Ignore("Not yet implemented")]
+        public void TogglEntitiesDoesNotHaveIdentityAttribute()
+        {
+        }
+
         private class FakeEntity : BaseEntity
         { }
     }

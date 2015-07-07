@@ -15,13 +15,19 @@ namespace TogglTool.Api.Models
 
         public BaseEntity()
         {
+            // TODO: Move LogCreatedOn update to DatabaseContext
+            // TODO: Set LogCreatedBy based on SecurityContext
             LogCreatedOn = DateTime.UtcNow;
         }
 
         public void Update(BaseEntity newData)
         {
-            LogCreatedOn = DateTime.UtcNow;
+            var changed = false;
             // TODO: Update all properties by reflection
+            // TODO: Set changed = true if any value is changed
+            // TODO: Move LogChangedOn update to DatabaseContext
+            if(changed)
+                LogChangedOn = DateTime.UtcNow;
         }
     }
 }

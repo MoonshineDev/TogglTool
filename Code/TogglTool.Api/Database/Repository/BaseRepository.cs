@@ -26,7 +26,8 @@ namespace TogglTool.Api.Database.Repository
             var dbIds = dbEntities.Select(x => x.id).ToArray();
             var toBeAdded = entities.Where(x => !dbIds.Contains(x.id));
             var toBeUpdated = entities.Where(x => dbIds.Contains(x.id));
-            set.AddRange(toBeAdded);
+            foreach (var entity in toBeAdded)
+                set.Add(entity);
             foreach (var entity in toBeUpdated)
                 entity.Update(entities.FirstOrDefault(x => x.id == entity.id));
         }

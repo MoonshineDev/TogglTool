@@ -8,7 +8,7 @@ namespace TogglTool.Api.Models
 {
     public class TimeEntry : TogglEntity
     {
-        public Guid guid { get; set; }
+        public Guid? guid { get; set; }
         public string description { get; set; }
         public bool billable { get; set; }
         public DateTime start { get; set; }

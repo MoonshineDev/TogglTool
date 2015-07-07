@@ -77,7 +77,7 @@ namespace TogglTool.Api
         {
             var url = "v8/workspaces";
             var query = new Dictionary<string, string>();
-            var workspaces = Api.Call<List<Workspace>>(url, query);
+            var workspaces = Api.Call<Workspace>(url, query);
             if ((option & WorkspaceOption.IncludeClients) != 0)
                 workspaces.ForEach(x => GetWorkspaceClients(x));
             if ((option & WorkspaceOption.IncludeProjects) != 0)
@@ -89,7 +89,7 @@ namespace TogglTool.Api
         {
             var url = string.Format("v8/workspaces/{0}/clients", workspace.id);
             var query = new Dictionary<string, string>();
-            var clients = Api.Call<List<Client>>(url, query);
+            var clients = Api.Call<Client>(url, query);
             AttachClients(workspace, clients);
             return clients;
         }
@@ -98,7 +98,7 @@ namespace TogglTool.Api
         {
             var url = string.Format("v8/workspaces/{0}/projects", workspace.id);
             var query = new Dictionary<string, string>();
-            var projects = Api.Call<List<Project>>(url, query);
+            var projects = Api.Call<Project>(url, query);
             AttachProjects(workspace, projects);
             return projects;
         }

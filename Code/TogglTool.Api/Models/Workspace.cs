@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class Workspace : BaseEntity
+    public class Workspace : TogglEntity
     {
         #region ctor
         public Workspace()
@@ -17,7 +17,6 @@ namespace TogglTool.Api.Models
         }
         #endregion
 
-        public int id { get; set; }
         public string name { get; set; }
         public bool premium { get; set; }
         public bool admin { get; set; }

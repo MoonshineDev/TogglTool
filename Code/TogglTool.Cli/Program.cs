@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TogglTool.Api;
+using TogglTool.Api.Database;
+using TogglTool.Api.Database.Repository;
 
 namespace TogglTool.Cli
 {
@@ -43,7 +45,9 @@ namespace TogglTool.Cli
         public void Run()
         {
             AssureTogglApiKey();
-            var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent);
+            var dbContext = new DatabaseContext();
+            var baseRepository = new BaseRepository(dbContext);
+            var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent, baseRepository);
             var workspacesApi = toggl.Workspaces;
             var workspace = workspacesApi.GetWorkspaces(WorkspaceOption.IncludeClientsAndProjects).FirstOrDefault();
             foreach (var client in workspace.ClientList)

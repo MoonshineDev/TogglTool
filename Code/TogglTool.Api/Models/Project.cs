@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class Project : BaseEntity
+    public class Project : TogglEntity
     {
         #region .ctor
         public Project()
@@ -15,7 +15,6 @@ namespace TogglTool.Api.Models
         }
         #endregion
 
-        public int id { get; set; }
         public Guid? guid { get; set; }
         public string name { get; set; }
         public bool billable { get; set; }

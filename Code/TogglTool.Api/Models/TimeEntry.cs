@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public class TimeEntry : BaseEntity
+    public class TimeEntry : TogglEntity
     {
-        public int id { get; set; }
-        public Guid guid { get; set; }
+        public Guid? guid { get; set; }
         public string description { get; set; }
         public bool billable { get; set; }
         public DateTime start { get; set; }

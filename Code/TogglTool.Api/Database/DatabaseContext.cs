@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -26,5 +27,23 @@ namespace TogglTool.Api.Database
 
         private static string GetDefaultConnectionString()
         { return Settings.Default.ConnectionString; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            ResetIdIdentityAttribute<Client>(modelBuilder);
+            ResetIdIdentityAttribute<Project>(modelBuilder);
+            ResetIdIdentityAttribute<TimeEntry>(modelBuilder);
+            ResetIdIdentityAttribute<Workspace>(modelBuilder);
+        }
+
+        private void ResetIdIdentityAttribute<T>(DbModelBuilder modelBuilder)
+            where T : TogglEntity
+        {
+            modelBuilder
+                .Entity<T>()
+                .Property(x => x.id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+        }
     }
 }

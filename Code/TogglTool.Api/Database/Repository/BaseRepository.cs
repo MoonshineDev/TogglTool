@@ -21,6 +21,8 @@ namespace TogglTool.Api.Database.Repository
         public void AddOrUpdate<T>(ICollection<T> entities)
             where T : TogglEntity
         {
+            if (entities == null)
+                return;
             var set = _dbContext.Set<T>();
             var dbEntities = GetByIds<T>(entities.Select(x => x.id).ToArray()).ToArray();
             var dbIds = dbEntities.Select(x => x.id).ToArray();

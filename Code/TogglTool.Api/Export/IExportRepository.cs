@@ -9,6 +9,6 @@ namespace TogglTool.Api.Export
 {
     public interface IExportRepository
     {
-        void exportWorkspace(Workspace workspace);
+        void ExportWorkspace(Workspace workspace);
     }
 }

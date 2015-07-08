@@ -31,6 +31,7 @@ namespace TogglTool.Tests.Api.Database.Repository
             _sut = new BaseRepository(_dbContext.Object);
         }
 
+        #region AddOrUpdate
         [Test]
         public void AddOrUpdate_Null()
         {
@@ -158,9 +159,95 @@ namespace TogglTool.Tests.Api.Database.Repository
             Assert.AreEqual("test 1b", entity2b.name);
             Assert.AreEqual("test 2b", entity2c.name);
         }
+        #endregion
 
-        //public IEnumerable<T> GetByIds<T>(ICollection<int> idList) where T : TogglEntity;
-        //public int SaveChanges();
-        //public IEnumerable<T> Where<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, bool>>[] morePredicates) where T : BaseEntity;
+        #region GetByIds
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_Null()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_Empty()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_NonExisting()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_SingleExisting()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_Duplicates()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_Multiple()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void GetByIds_MultipleAndMissing()
+        { }
+        #endregion
+
+        #region SaveChanges
+        [Test]
+        public void SaveChanges()
+        {
+            _dbContext.Setup(x => x.SaveChanges()).Returns(0);
+            _sut.SaveChanges();
+            _dbContext.Verify(x => x.SaveChanges(), Times.Once);
+        }
+        #endregion
+
+        #region Where
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_Null()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_All()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_None()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_Some()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_SomeAndNull()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_SomeAndAll()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_SomeAndNone()
+        { }
+
+        [Test]
+        [Ignore("Incomplete")]
+        public void Where_SomeAndSome()
+        { }
+        #endregion
     }
 }

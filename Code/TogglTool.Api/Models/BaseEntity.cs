@@ -20,7 +20,7 @@ namespace TogglTool.Api.Models
             LogCreatedOn = DateTime.UtcNow;
         }
 
-        public void Update(BaseEntity newData)
+        public virtual void Update(BaseEntity newData)
         {
             var changed = false;
             // TODO: Update all properties by reflection

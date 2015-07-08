@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Api\Database\DatabaseContextTests.cs" />
     <Compile Include="Api\Database\Repository\BaseRepositoryTests.cs" />
+    <Compile Include="Api\Models\BaseEntityTests.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

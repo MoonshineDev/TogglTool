@@ -1,0 +1,5 @@
+
+ * Use GIT REBASE within a branch.
+    - Reason: By rebasing before pushing to git history is made more maintainable.
+ * Use GIT MERGE when adopting your commits onto another branch.
+    - Reason: Rebasing pushed commits would distort history and make collaboration harder.

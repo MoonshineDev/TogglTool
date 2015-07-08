@@ -1,0 +1,50 @@
+
+ * Features are listed and managed through Trello.
+
+ * Workflow within Trello
+    ¤ Board 1, Backlog
+      > Need Category (start)
+        > Desc: Tasks that need to be categorised into epics
+        > Dest: Need Spedification
+      > Need Specification
+        > Desc: Tasks that need to be further specified
+        > Dest: Need Priority
+      > Need Priority
+        > Desc: Tasks that need to be prioratized
+        > Dest: Backlog, Urgent Tasks
+      > Backlog
+        > Desc: Tasks due to be added to future sprints
+        > Dest: -
+      > Urgent Tasks
+        > Desc: Hotfixes
+        > Dest: -
+
+    ¤ Board 2, Current Sprint
+      > Todo (start)
+        > Desc: Tasks in pipeline current sprint
+        > Dest: Specify Task
+      > Specify Task
+        > Desc: Specify subtasks (the todo checklist)
+        > Dest: Specify Test Cases
+      > Specify Test Cases
+        > Desc: Add ignored unit tests
+        > Dest: Implement
+      > Implement
+        > Desc: Process subtasks
+        > Dest: Acceptance Test
+      > Acceptance Test
+        > Desc: Merge develop into feature branch, verify correctness
+        > Dest: Done, Implement
+      > Done
+        > Desc: Tasks completed within current sprint
+        > Dest: -
+
+    ¤ Board 3, Done Tasks
+      > Sprint #1
+        > Desc: Tasks completed within Sprint #1
+        > Dest: -
+      > Sprint #2
+        > Desc: Tasks completed within Sprint #2
+        > Dest: -
+      > And so on.
+      

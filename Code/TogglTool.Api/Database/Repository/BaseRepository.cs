@@ -24,20 +24,25 @@ namespace TogglTool.Api.Database.Repository
             if (entities == null)
                 return;
             var set = _dbContext.Set<T>();
-            var dbEntities = GetByIds<T>(entities.Select(x => x.id).ToArray()).ToArray();
-            var dbIds = dbEntities.Select(x => x.id).ToArray();
-            var toBeAdded = entities.Where(x => !dbIds.Contains(x.id));
-            var toBeUpdated = entities.Where(x => dbIds.Contains(x.id));
-            foreach (var entity in toBeAdded)
-                set.Add(entity);
-            foreach (var entity in toBeUpdated)
-                entity.Update(entities.FirstOrDefault(x => x.id == entity.id));
+            var ids = entities.Select(x => x.id).ToArray();
+            if (ids.Count() != ids.Distinct().Count())
+                throw new ArgumentException("No duplicates allowed");
+            var dbEntities = GetByIds<T>(ids).ToArray();
+            foreach (var entity in entities)
+            {
+                var dbEntity = dbEntities.FirstOrDefault(x => x.id == entity.id);
+                if (dbEntity == null)
+                    set.Add(entity);
+                else
+                    dbEntity.Update(entity);
+            }
         }
 
         public IEnumerable<T> GetByIds<T>(ICollection<int> idList)
             where T : TogglEntity
         {
-            return _dbContext.Set<T>().Where(x => idList.Contains(x.id));
+            var ids = idList.Distinct().ToArray();
+            return _dbContext.Set<T>().Where(x => ids.Contains(x.id));
         }
 
         public int SaveChanges()

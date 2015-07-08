@@ -79,16 +79,15 @@ namespace TogglTool.Tests.Api.Database.Repository
         }
 
         [Test]
-        [Explicit("Failed")]
         public void AddOrUpdate_Duplicates()
         {
             var list = new List<Workspace>();
             list.Add(new Workspace { id = 1 });
             list.Add(new Workspace { id = 1 });
-            _sut.AddOrUpdate(list);
+            Assert.Catch(() => _sut.AddOrUpdate(list));
             var entity = _inmemory.FirstOrDefault(x => x.id == 1);
-            Assert.AreEqual(1, _inmemory.Count());
-            Assert.NotNull(entity);
+            Assert.AreEqual(0, _inmemory.Count());
+            Assert.IsNull(entity);
         }
 
         [Test]

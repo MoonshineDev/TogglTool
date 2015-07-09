@@ -38,7 +38,7 @@ namespace TogglTool.Api.Database
             ResetIdIdentityAttribute<Workspace>(modelBuilder);
         }
 
-        private void ResetIdIdentityAttribute<T>(DbModelBuilder modelBuilder)
+        private static void ResetIdIdentityAttribute<T>(DbModelBuilder modelBuilder)
             where T : TogglEntity
         {
             modelBuilder

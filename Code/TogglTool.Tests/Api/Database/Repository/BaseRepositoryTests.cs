@@ -159,43 +159,71 @@ namespace TogglTool.Tests.Api.Database.Repository
         #endregion
 
         #region GetByIds
-
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_Null()
         {
             Assert.IsEmpty(_sut.GetByIds<Workspace>(null));
         }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_Empty()
-        { }
+        {
+            Assert.IsEmpty(_sut.GetByIds<Workspace>(Enumerable.Empty<int>()));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_NonExisting()
-        { }
+        {
+            Assert.IsEmpty(_sut.GetByIds<Workspace>(new[] {1}));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_SingleExisting()
-        { }
+        {
+            _inmemory.Add(new Workspace {id = 1});
+            var list = _sut.GetByIds<Workspace>(new[] {1}).ToArray();
+            var entity = list.FirstOrDefault();
+            Assert.AreEqual(1, list.Count());
+            Assert.IsNotNull(entity);
+            Assert.AreEqual(1, entity.id);
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_Duplicates()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            var list = _sut.GetByIds<Workspace>(new[] { 1, 1 }).ToArray();
+            var entity = list.FirstOrDefault();
+            Assert.AreEqual(1, list.Count());
+            Assert.IsNotNull(entity);
+            Assert.AreEqual(1, entity.id);
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_Multiple()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            var list = _sut.GetByIds<Workspace>(new[] { 1, 2 }).ToArray();
+            var entity1 = list.FirstOrDefault(x => x.id == 1);
+            var entity2 = list.FirstOrDefault(x => x.id == 1);
+            Assert.AreEqual(2, list.Count());
+            Assert.IsNotNull(entity1);
+            Assert.IsNotNull(entity2);
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void GetByIds_MultipleAndMissing()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            var list = _sut.GetByIds<Workspace>(new[] { 1, 2, 3 }).ToArray();
+            var entity1 = list.FirstOrDefault(x => x.id == 1);
+            var entity2 = list.FirstOrDefault(x => x.id == 1);
+            Assert.AreEqual(2, list.Count());
+            Assert.IsNotNull(entity1);
+            Assert.IsNotNull(entity2);
+        }
         #endregion
 
         #region SaveChanges
@@ -203,51 +231,122 @@ namespace TogglTool.Tests.Api.Database.Repository
         public void SaveChanges()
         {
             _dbContext.Setup(x => x.SaveChanges()).Returns(0);
-            _sut.SaveChanges();
-            _dbContext.Verify(x => x.SaveChanges(), Times.Once);
+            Assert.AreEqual(0, _sut.SaveChanges());
+            _dbContext.Setup(x => x.SaveChanges()).Returns(1);
+            Assert.AreEqual(1, _sut.SaveChanges());
+            _dbContext.Verify(x => x.SaveChanges(), Times.Exactly(2));
         }
         #endregion
 
         #region Where
         [Test]
-        [Ignore("Incomplete")]
         public void Where_Null()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            Assert.IsEmpty(_sut.Where<Workspace>(null));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
+        public void Where_NullAndAll()
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(null, x => true).ToArray();
+            Assert.AreEqual(3, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 1));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+        }
+
+        [Test]
+        public void Where_NullAndNull()
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            Assert.IsEmpty(_sut.Where<Workspace>(null, null).ToArray());
+        }
+
+        [Test]
         public void Where_All()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(x => true).ToArray();
+            Assert.AreEqual(3, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 1));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_None()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            Assert.IsEmpty(_sut.Where<Workspace>(x => false).ToArray());
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_Some()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(x => x.id >= 2).ToArray();
+            Assert.AreEqual(2, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_SomeAndNull()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(x => x.id >= 2, null).ToArray();
+            Assert.AreEqual(2, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_SomeAndAll()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(x => x.id >= 2, x => true).ToArray();
+            Assert.AreEqual(2, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_SomeAndNone()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            Assert.IsEmpty(_sut.Where<Workspace>(x => x.id >= 2, x => false).ToArray());
+        }
 
         [Test]
-        [Ignore("Incomplete")]
         public void Where_SomeAndSome()
-        { }
+        {
+            _inmemory.Add(new Workspace { id = 1 });
+            _inmemory.Add(new Workspace { id = 2 });
+            _inmemory.Add(new Workspace { id = 3 });
+            var list = _sut.Where<Workspace>(x => x.id >= 2, x => x.id <= 2).ToArray();
+            Assert.AreEqual(1, list.Count());
+            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+        }
         #endregion
     }
 }

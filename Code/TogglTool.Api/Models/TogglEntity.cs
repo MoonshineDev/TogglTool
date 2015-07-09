@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
-    public abstract class TogglEntity : BaseEntity
+    public abstract class TogglEntity : WebApiEntity
     {
         public int id { get; set; }
 

@@ -48,10 +48,10 @@ namespace TogglTool.Tests.Api.Database
                 .Where(x => x.IsSubclassOf(typeof (BaseEntity)))
                 .ToArray();
             var expected = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(x => !x.Equals(Assembly.GetExecutingAssembly()))
                 .SelectMany(x => x.GetTypes())
                 .Where(x => x.IsSubclassOf(typeof (BaseEntity)))
                 .Where(x => !x.IsAbstract)
-                .Where(x => x != typeof(FakeEntity))
                 .ToArray();
             foreach(var type in expected)
                 Assert.Contains(type, actual);

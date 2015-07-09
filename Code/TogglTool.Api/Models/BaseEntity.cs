@@ -25,6 +25,8 @@ namespace TogglTool.Api.Models
 
         public virtual bool Update(BaseEntity newData)
         {
+            if (newData == null)
+                return false;
             if (GetType() != newData.GetType())
                 return false;
             var changed = false;

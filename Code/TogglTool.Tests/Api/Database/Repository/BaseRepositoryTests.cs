@@ -105,7 +105,6 @@ namespace TogglTool.Tests.Api.Database.Repository
         }
 
         [Test]
-        [Explicit("Failed")]
         public void AddOrUpdate_Update()
         {
             var list1 = new List<Workspace>();
@@ -127,7 +126,6 @@ namespace TogglTool.Tests.Api.Database.Repository
         }
 
         [Test]
-        [Explicit("Failed")]
         public void AddOrUpdate_Mixed()
         {
             var list1 = new List<Workspace>();
@@ -161,10 +159,13 @@ namespace TogglTool.Tests.Api.Database.Repository
         #endregion
 
         #region GetByIds
+
         [Test]
         [Ignore("Incomplete")]
         public void GetByIds_Null()
-        { }
+        {
+            Assert.IsEmpty(_sut.GetByIds<Workspace>(null));
+        }
 
         [Test]
         [Ignore("Incomplete")]

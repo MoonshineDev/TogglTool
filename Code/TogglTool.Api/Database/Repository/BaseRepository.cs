@@ -41,6 +41,8 @@ namespace TogglTool.Api.Database.Repository
         public IEnumerable<T> GetByIds<T>(ICollection<int> idList)
             where T : TogglEntity
         {
+            if (idList == null)
+                return Enumerable.Empty<T>();
             var ids = idList.Distinct().ToArray();
             return _dbContext.Set<T>().Where(x => ids.Contains(x.id));
         }

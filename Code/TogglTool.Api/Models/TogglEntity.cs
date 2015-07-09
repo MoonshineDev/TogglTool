@@ -10,14 +10,14 @@ namespace TogglTool.Api.Models
     {
         public int id { get; set; }
 
-        public override void Update(BaseEntity newData)
+        public override bool Update(BaseEntity newData)
         {
             var entity = newData as TogglEntity;
             if (entity == null)
-                return;
+                return false;
             if (id != entity.id)
-                return;
-            base.Update(newData);
+                return false;
+            return base.Update(newData);
         }
     }
 }

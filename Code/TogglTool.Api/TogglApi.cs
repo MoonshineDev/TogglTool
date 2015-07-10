@@ -22,39 +22,28 @@ namespace TogglTool.Api
 
         public string UserAgent { get; private set; }
 
-        private IBaseRepository _baseRepository;
-        private TogglApiMode _mode;
+        private readonly IBaseRepository _baseRepository;
+        private readonly TogglApiMode _mode;
         private TimeEntriesApi _timeEntries;
         private WorkspacesApi _workspaces;
         public TimeEntriesApi TimeEntries { get {
             if (_timeEntries == null)
-                _timeEntries = TimeEntriesApi.Create(this);
+                _timeEntries = new TimeEntriesApi(this, _baseRepository, _mode);
             return _timeEntries;
         } }
         public WorkspacesApi Workspaces { get {
             if (_workspaces == null)
-                _workspaces = WorkspacesApi.Create(this);
+                _workspaces = new WorkspacesApi(this, _baseRepository, _mode);
             return _workspaces;
         } }
 
         #region .ctor
-        private TogglApi(string apiKey, string userAgent, IBaseRepository baseRepository, TogglApiMode mode)
+        public TogglApi(string apiKey, string userAgent, IBaseRepository baseRepository, TogglApiMode mode)
         {
             ApiKey = apiKey;
             UserAgent = userAgent;
             _baseRepository = baseRepository;
             _mode = mode;
-        }
-        #endregion
-
-        #region Create
-        public static TogglApi Create(string apiKey, string userAgent, IBaseRepository baseRepository, TogglApiMode mode = TogglApiMode.Online)
-        {
-            if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentException("apiKey");
-            if (string.IsNullOrEmpty(userAgent))
-                throw new ArgumentException("userAgent");
-            return new TogglApi(apiKey, userAgent, baseRepository, mode);
         }
         #endregion
 

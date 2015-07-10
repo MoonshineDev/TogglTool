@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TogglTool.Api.Database.Repository;
 using TogglTool.Api.Models;
 
 namespace TogglTool.Api
@@ -10,18 +11,9 @@ namespace TogglTool.Api
     public class TimeEntriesApi : TogglBaseRepository
     {
         #region .ctor
-        private TimeEntriesApi(TogglApi togglApi)
-            : base(togglApi)
+        public TimeEntriesApi(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
+            : base(togglApi, baseRepository, mode)
         { }
-        #endregion
-
-        #region Create
-        public static TimeEntriesApi Create(TogglApi togglApi)
-        {
-            if (togglApi == null)
-                throw new ArgumentNullException();
-            return new TimeEntriesApi(togglApi);
-        }
         #endregion
 
         public List<TimeEntry> GetTimeEntries(DateTime start)

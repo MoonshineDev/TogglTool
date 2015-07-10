@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TogglTool.Api.Database.Repository;
 using TogglTool.Api.Models;
 
 namespace TogglTool.Api
@@ -10,18 +11,9 @@ namespace TogglTool.Api
     public class WorkspacesApi : TogglBaseRepository
     {
         #region .ctor
-        private WorkspacesApi(TogglApi togglApi)
-            : base(togglApi)
+        public WorkspacesApi(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
+            : base(togglApi, baseRepository, mode)
         { }
-        #endregion
-
-        #region Create
-        public static WorkspacesApi Create(TogglApi togglApi)
-        {
-            if (togglApi == null)
-                throw new ArgumentNullException();
-            return new WorkspacesApi(togglApi);
-        }
         #endregion
 
         public static void AttachClients(Workspace workspace, ICollection<Client> clients)

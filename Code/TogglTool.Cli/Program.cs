@@ -47,7 +47,7 @@ namespace TogglTool.Cli
             AssureTogglApiKey();
             var dbContext = new DatabaseContext();
             var baseRepository = new BaseRepository(dbContext);
-            var toggl = TogglApi.Create(_options.TogglApiKey, _userAgent, baseRepository);
+            var toggl = new TogglApi(_options.TogglApiKey, _userAgent, baseRepository, TogglApiMode.Online);
             var workspacesApi = toggl.Workspaces;
             var workspace = workspacesApi.GetWorkspaces(WorkspaceOption.IncludeClientsAndProjects).FirstOrDefault();
             foreach (var client in workspace.ClientList)

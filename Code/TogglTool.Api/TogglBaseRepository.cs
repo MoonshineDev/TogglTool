@@ -28,6 +28,12 @@ namespace TogglTool.Api
                     return getOfflineData(_baseRepository);
                 case TogglApiMode.Online:
                     return getOnlineData(_togglApi);
+                case TogglApiMode.Optimized:
+                    var entity = getOfflineData(_baseRepository);
+                    // Refresh data if needed
+                    if (entity == null || entity.ExpirationOn <= DateTime.UtcNow)
+                        entity = getOnlineData(_togglApi);
+                    return entity;
                 default:
                     return null;
             }
@@ -42,6 +48,10 @@ namespace TogglTool.Api
                     return getOfflineData(_baseRepository);
                 case TogglApiMode.Online:
                     return getOnlineData(_togglApi);
+                case TogglApiMode.Optimized:
+                    var list = getOfflineData(_baseRepository);
+                    // TODO: Refresh data if needed
+                    return list;
                 default:
                     return null;
             }

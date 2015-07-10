@@ -8,40 +8,40 @@ namespace TogglTool.Api
 {
     public abstract class TogglBaseRepository
     {
-        protected TogglApi Api { get; private set; }
-        private IBaseRepository _baseRepository;
-        private TogglApiMode _mode;
+        private readonly TogglApi _togglApi;
+        private readonly IBaseRepository _baseRepository;
+        private readonly TogglApiMode _mode;
 
         protected TogglBaseRepository(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
         {
-            Api = togglApi;
+            _togglApi = togglApi;
             _baseRepository = baseRepository;
             _mode = mode;
         }
 
-        protected T Query<T>(Func<TogglApi, T> GetOnlineData, Func<IBaseRepository, T> GetOfflineData)
+        protected T Query<T>(Func<TogglApi, T> getOnlineData, Func<IBaseRepository, T> getOfflineData)
             where T : TogglEntity
         {
             switch (_mode)
             {
                 case TogglApiMode.Offline:
-                    return GetOfflineData(_baseRepository);
+                    return getOfflineData(_baseRepository);
                 case TogglApiMode.Online:
-                    return GetOnlineData(Api);
+                    return getOnlineData(_togglApi);
                 default:
                     return null;
             }
         }
 
-        protected List<T> Query<T>(Func<TogglApi, List<T>> GetOnlineData, Func<IBaseRepository, List<T>> GetOfflineData)
+        protected List<T> Query<T>(Func<TogglApi, List<T>> getOnlineData, Func<IBaseRepository, List<T>> getOfflineData)
             where T : TogglEntity
         {
             switch (_mode)
             {
                 case TogglApiMode.Offline:
-                    return GetOfflineData(_baseRepository);
+                    return getOfflineData(_baseRepository);
                 case TogglApiMode.Online:
-                    return GetOnlineData(Api);
+                    return getOnlineData(_togglApi);
                 default:
                     return null;
             }

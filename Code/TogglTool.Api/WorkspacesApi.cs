@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api.Database.Repository;
 using TogglTool.Api.Models;
 
@@ -20,9 +17,10 @@ namespace TogglTool.Api
         {
             foreach (var client in clients)
             {
+                var clientId = client.id;
                 workspace.ClientList.Add(client);
                 client.Workspace = workspace;
-                foreach (var project in workspace.ProjectList.Where(x => x.cid == client.id))
+                foreach (var project in workspace.ProjectList.Where(x => x.cid == clientId))
                 {
                     client.ProjectList.Add(project);
                     project.Client = client;
@@ -34,12 +32,13 @@ namespace TogglTool.Api
         {
             foreach (var project in projects)
             {
+                var projectId = project.id;
                 workspace.ProjectList.Add(project);
                 project.Workspace = workspace;
                 project.Client = workspace.ClientList.FirstOrDefault(x => x.id == project.cid);
                 if (project.Client != null)
                     project.Client.ProjectList.Add(project);
-                foreach (var timeEntry in workspace.TimeEntryList.Where(x => x.pid.HasValue && x.pid.Value == project.id))
+                foreach (var timeEntry in workspace.TimeEntryList.Where(x => x.pid.HasValue && x.pid.Value == projectId))
                 {
                     project.TimeEntryList.Add(timeEntry);
                     timeEntry.Project = project;
@@ -66,7 +65,10 @@ namespace TogglTool.Api
         {
             var url = "v8/workspaces";
             var query = new Dictionary<string, string>();
-            var workspaces = Api.Call<Workspace>(url, query);
+            var workspaces = Query(
+                togglApi => togglApi.Call<Workspace>(url, query),
+                baseRepository => baseRepository.Where<Workspace>(x => true).ToList()
+                );
             if ((option & WorkspaceOption.IncludeClients) != 0)
                 workspaces.ForEach(x => GetWorkspaceClients(x));
             if ((option & WorkspaceOption.IncludeProjects) != 0)
@@ -78,7 +80,10 @@ namespace TogglTool.Api
         {
             var url = string.Format("v8/workspaces/{0}/clients", workspace.id);
             var query = new Dictionary<string, string>();
-            var clients = Api.Call<Client>(url, query);
+            var clients = Query(
+                togglApi => togglApi.Call<Client>(url, query),
+                baseRepository => baseRepository.Where<Client>(x => x.wid == workspace.id).ToList()
+                );
             AttachClients(workspace, clients);
             return clients;
         }
@@ -87,7 +92,10 @@ namespace TogglTool.Api
         {
             var url = string.Format("v8/workspaces/{0}/projects", workspace.id);
             var query = new Dictionary<string, string>();
-            var projects = Api.Call<Project>(url, query);
+            var projects = Query(
+                togglApi => togglApi.Call<Project>(url, query),
+                baseRepository => baseRepository.Where<Project>(x => x.wid == workspace.id).ToList()
+                );
             AttachProjects(workspace, projects);
             return projects;
         }

@@ -1,6 +1,9 @@
 ﻿
+using System;
+
 namespace TogglTool.Api
 {
+    [Flags]
     public enum WorkspaceOption
     {
         OnlyWorkspaces = 0,

@@ -1,12 +1,8 @@
 ﻿using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api.Database.Repository;
 using TogglTool.Api.Models;
 
@@ -49,8 +45,9 @@ namespace TogglTool.Tests.Api.Database.Repository
         [Test]
         public void AddOrUpdate_SingleAdd()
         {
-            var list = new List<Workspace>();
-            list.Add(new Workspace { id = 1 });
+            var list = new List<Workspace> {
+                new Workspace {id = 1}
+            };
             _sut.AddOrUpdate(list);
             var entity = _inmemory.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(1, _inmemory.Count());
@@ -60,9 +57,9 @@ namespace TogglTool.Tests.Api.Database.Repository
         [Test]
         public void AddOrUpdate_Replay()
         {
-            var list = new List<Workspace>();
-            list.Add(new Workspace { id = 1 });
-
+            var list = new List<Workspace> {
+                new Workspace {id = 1}
+            };
             _sut.AddOrUpdate(list);
             var entity1 = _inmemory.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(1, _inmemory.Count());
@@ -81,9 +78,10 @@ namespace TogglTool.Tests.Api.Database.Repository
         [Test]
         public void AddOrUpdate_Duplicates()
         {
-            var list = new List<Workspace>();
-            list.Add(new Workspace { id = 1 });
-            list.Add(new Workspace { id = 1 });
+            var list = new List<Workspace> {
+                new Workspace {id = 1},
+                new Workspace {id = 1}
+            };
             Assert.Catch(() => _sut.AddOrUpdate(list));
             var entity = _inmemory.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(0, _inmemory.Count());
@@ -93,9 +91,10 @@ namespace TogglTool.Tests.Api.Database.Repository
         [Test]
         public void AddOrUpdate_Multiple()
         {
-            var list = new List<Workspace>();
-            list.Add(new Workspace { id = 1 });
-            list.Add(new Workspace { id = 2 });
+            var list = new List<Workspace> {
+                new Workspace {id = 1},
+                new Workspace {id = 2}
+            };
             _sut.AddOrUpdate(list);
             var entity1 = _inmemory.FirstOrDefault(x => x.id == 1);
             var entity2 = _inmemory.FirstOrDefault(x => x.id == 2);
@@ -136,25 +135,25 @@ namespace TogglTool.Tests.Api.Database.Repository
             list2.Add(new Workspace { id = 3, name = "test 2b" });
 
             _sut.AddOrUpdate(list1);
-            var entity1a = _inmemory.FirstOrDefault(x => x.id == 1);
-            var entity1b = _inmemory.FirstOrDefault(x => x.id == 2);
+            var entity1A = _inmemory.FirstOrDefault(x => x.id == 1);
+            var entity1B = _inmemory.FirstOrDefault(x => x.id == 2);
             Assert.AreEqual(2, _inmemory.Count());
-            Assert.NotNull(entity1a);
-            Assert.NotNull(entity1b);
-            Assert.AreEqual("test 1a", entity1a.name);
-            Assert.AreEqual("test 1b", entity1b.name);
+            Assert.NotNull(entity1A);
+            Assert.NotNull(entity1B);
+            Assert.AreEqual("test 1a", entity1A.name);
+            Assert.AreEqual("test 1b", entity1B.name);
             
             _sut.AddOrUpdate(list2);
-            var entity2a = _inmemory.FirstOrDefault(x => x.id == 1);
-            var entity2b = _inmemory.FirstOrDefault(x => x.id == 2);
-            var entity2c = _inmemory.FirstOrDefault(x => x.id == 3);
+            var entity2A = _inmemory.FirstOrDefault(x => x.id == 1);
+            var entity2B = _inmemory.FirstOrDefault(x => x.id == 2);
+            var entity2C = _inmemory.FirstOrDefault(x => x.id == 3);
             Assert.AreEqual(3, _inmemory.Count());
-            Assert.NotNull(entity2a);
-            Assert.NotNull(entity2b);
-            Assert.NotNull(entity2c);
-            Assert.AreEqual("test 2a", entity2a.name);
-            Assert.AreEqual("test 1b", entity2b.name);
-            Assert.AreEqual("test 2b", entity2c.name);
+            Assert.NotNull(entity2A);
+            Assert.NotNull(entity2B);
+            Assert.NotNull(entity2C);
+            Assert.AreEqual("test 2a", entity2A.name);
+            Assert.AreEqual("test 1b", entity2B.name);
+            Assert.AreEqual("test 2b", entity2C.name);
         }
         #endregion
 

@@ -1,10 +1,5 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TogglTool.Cli
 {
@@ -19,7 +14,7 @@ namespace TogglTool.Cli
         [HelpOption]
         public string GetUsage()
         {
-            return HelpText.AutoBuild(this, (current) => HelpText.DefaultParsingErrorsHandler(this, current));
+            return HelpText.AutoBuild(this, current => HelpText.DefaultParsingErrorsHandler(this, current));
         }
     }
 }

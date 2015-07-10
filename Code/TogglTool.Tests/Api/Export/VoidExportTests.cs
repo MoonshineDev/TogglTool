@@ -1,9 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api.Export;
 using TogglTool.Api.Models;
 
@@ -20,13 +17,13 @@ namespace TogglTool.Tests.Api.Export
             _sut = new VoidExport();
         }
 
-        public IEnumerable<Workspace> ExportWorkspace_TestCases
+        public IEnumerable<Workspace> ExportWorkspaceTestCases
         {
             get
             {
                 var r = new Random();
                 yield return default(Workspace);
-                yield return new Workspace { };
+                yield return new Workspace();
                 yield return new Workspace { id = 1 };
                 yield return new Workspace { id = 0 };
                 yield return new Workspace { id = -1 };
@@ -38,7 +35,7 @@ namespace TogglTool.Tests.Api.Export
         }
 
         [Test]
-        [TestCaseSource("ExportWorkspace_TestCases")]
+        [TestCaseSource("ExportWorkspaceTestCases")]
         public void ExportWorkspace(Workspace workspace)
         {
             _sut.ExportWorkspace(workspace);

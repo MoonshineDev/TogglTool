@@ -1,10 +1,7 @@
 ﻿using CommandLine;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api;
 using TogglTool.Api.Database;
 using TogglTool.Api.Database.Repository;
@@ -29,17 +26,11 @@ namespace TogglTool.Cli
         {
             var parser = Parser.Default;
             var options = new Options();
-            var success = default(bool);
-            try
-            {
-                success = parser.ParseArguments(args, options);
-                var main = new Program(options);
-                main.Run();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            if (!parser.ParseArguments(args, options))
+                throw new Exception("CLI argument parse error");
+            var main = new Program(options);
+            main.Run();
+            // TODO: Log exceptions to database
         }
 
         public void Run()
@@ -50,6 +41,8 @@ namespace TogglTool.Cli
             var toggl = new TogglApi(_options.TogglApiKey, _userAgent, baseRepository, TogglApiMode.Online);
             var workspacesApi = toggl.Workspaces;
             var workspace = workspacesApi.GetWorkspaces(WorkspaceOption.IncludeClientsAndProjects).FirstOrDefault();
+            if (workspace == null)
+                return;
             foreach (var client in workspace.ClientList)
             {
                 Console.WriteLine("Client Id: {0}", client.id);
@@ -70,7 +63,7 @@ namespace TogglTool.Cli
             #region Store windows registry values
             if (_options.StoreApiKeys && !string.IsNullOrEmpty(_options.TogglApiKey))
             {
-                reg = reg ?? Registry.CurrentUser.CreateSubKey(_regname);
+                reg = Registry.CurrentUser.CreateSubKey(_regname);
                 if (reg != null)
                     reg.SetValue(_regkey_togglapikey, _options.TogglApiKey);
             }

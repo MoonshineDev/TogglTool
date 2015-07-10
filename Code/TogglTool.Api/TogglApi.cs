@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,15 +26,13 @@ namespace TogglTool.Api
         private TimeEntriesApi _timeEntries;
         private WorkspacesApi _workspaces;
         public TimeEntriesApi TimeEntries { get {
-            if (_timeEntries == null)
-                _timeEntries = new TimeEntriesApi(this, _baseRepository, _mode);
-            return _timeEntries;
-        } }
+            return _timeEntries ?? (_timeEntries = new TimeEntriesApi(this, _baseRepository, _mode));
+        }
+        }
         public WorkspacesApi Workspaces { get {
-            if (_workspaces == null)
-                _workspaces = new WorkspacesApi(this, _baseRepository, _mode);
-            return _workspaces;
-        } }
+            return _workspaces ?? (_workspaces = new WorkspacesApi(this, _baseRepository, _mode));
+        }
+        }
 
         #region .ctor
         public TogglApi(string apiKey, string userAgent, IBaseRepository baseRepository, TogglApiMode mode)
@@ -86,12 +83,11 @@ namespace TogglTool.Api
                 httpClient.DefaultRequestHeaders.Authorization = authHeader;
                 var response = await httpClient.GetAsync(uri);
                 var code = response.StatusCode;
-                var content = default(string);
                 Console.WriteLine("{0} {1} {2}", (int)code, code.ToString(), uri);
                 switch (code)
                 {
                     case HttpStatusCode.OK:
-                        content = await response.Content.ReadAsStringAsync();
+                        var content = await response.Content.ReadAsStringAsync();
                         var list = JsonConvert.DeserializeObject<List<T>>(content);
                         _baseRepository.AddOrUpdate(list);
                         _baseRepository.SaveChanges();

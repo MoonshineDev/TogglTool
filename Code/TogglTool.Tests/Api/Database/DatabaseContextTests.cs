@@ -1,16 +1,11 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api.Database;
 using TogglTool.Api.Models;
 
@@ -78,10 +73,13 @@ namespace TogglTool.Tests.Api.Database
             var togglEntities = _types
                 .Where(x => x.IsSubclassOf(typeof(TogglEntity)))
                 .ToDictionary(x => x, x => false);
+            Assert.IsNotNull(activeEntityConfigurations);
             foreach (var entityConfiguration in activeEntityConfigurations)
             {
                 var clrType = GetPrivateProperty(entityConfiguration, "ClrType") as Type;
                 var primitivePropertyConfigurations = GetPrivateProperty(entityConfiguration, "PrimitivePropertyConfigurations") as IDictionary;
+                Assert.IsNotNull(clrType);
+                Assert.IsNotNull(primitivePropertyConfigurations);
                 foreach (var kvp in primitivePropertyConfigurations)
                 {
                     var property = GetPublicProperty(kvp, "Key");
@@ -94,36 +92,28 @@ namespace TogglTool.Tests.Api.Database
             Assert.True(togglEntities.All(x => x.Value));
         }
 
-        private object GetPublicField(object source, string name)
+        private static object GetPrivateField(object source, string name)
         {
-            return source
-                .GetType()
-                .GetField(name)
-                .GetValue(source);
+            var field = source.GetType()
+                .GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.IsNotNull(field);
+            return field.GetValue(source);
         }
 
-        private object GetPrivateField(object source, string name)
+        private static object GetPublicProperty(object source, string name)
         {
-            return source
-                .GetType()
-                .GetField(name, BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(source);
+            var property = source.GetType()
+                .GetProperty(name);
+            Assert.IsNotNull(property);
+            return property.GetValue(source);
         }
 
-        private object GetPublicProperty(object source, string name)
+        private static object GetPrivateProperty(object source, string name)
         {
-            return source
-                .GetType()
-                .GetProperty(name)
-                .GetValue(source);
-        }
-
-        private object GetPrivateProperty(object source, string name)
-        {
-            return source
-                .GetType()
-                .GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(source);
+            var property = source.GetType()
+                .GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.IsNotNull(property);
+            return property.GetValue(source);
         }
 
         private class FakeEntity : BaseEntity

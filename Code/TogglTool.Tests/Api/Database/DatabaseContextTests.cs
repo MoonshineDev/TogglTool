@@ -8,6 +8,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using TogglTool.Api.Database;
@@ -69,16 +70,13 @@ namespace TogglTool.Tests.Api.Database
         [Test]
         public void TogglEntitiesDoesNotHaveIdentityAttribute()
         {
-            var sut = new DatabaseContext();
-            var configuration = sut.Configuration;
-            var internalContext = GetPrivateField(configuration, "_internalContext");
-            var codeFirstModel = GetPublicProperty(internalContext, "CodeFirstModel");
-            var cachedModelBuilder = GetPrivateProperty(codeFirstModel, "CachedModelBuilder");
-            var configurations = GetPublicProperty(cachedModelBuilder, "Configurations");
-            var modelConfiguration = GetPrivateField(configurations, "_modelConfiguration");
+            // Avoid initializing the whole DbContext.
+            var sut = (DatabaseFakeContext)FormatterServices.GetUninitializedObject(typeof (DatabaseFakeContext));
+            var modelBuilder = sut.TriggerOnModelCreating();
+            var modelConfiguration = GetPrivateField(modelBuilder, "_modelConfiguration");
             var activeEntityConfigurations = GetPrivateProperty(modelConfiguration, "ActiveEntityConfigurations") as IList;
             var togglEntities = _types
-                .Where(x => x.IsSubclassOf(typeof (TogglEntity)))
+                .Where(x => x.IsSubclassOf(typeof(TogglEntity)))
                 .ToDictionary(x => x, x => false);
             foreach (var entityConfiguration in activeEntityConfigurations)
             {
@@ -130,5 +128,15 @@ namespace TogglTool.Tests.Api.Database
 
         private class FakeEntity : BaseEntity
         { }
+
+        private class DatabaseFakeContext : DatabaseContext
+        {
+            public DbModelBuilder TriggerOnModelCreating()
+            {
+                var modelBuilder = new DbModelBuilder();
+                OnModelCreating(modelBuilder);
+                return modelBuilder;
+            }
+        }
     }
 }

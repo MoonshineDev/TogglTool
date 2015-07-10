@@ -74,6 +74,8 @@
     </Compile>
     <Compile Include="TimeEntriesApi.cs" />
     <Compile Include="TogglApi.cs" />
+    <Compile Include="TogglApiMode.cs" />
+    <Compile Include="TogglBaseRepository.cs" />
     <Compile Include="WorkspaceOption.cs" />
     <Compile Include="WorkspacesApi.cs" />
   </ItemGroup>

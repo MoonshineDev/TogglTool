@@ -7,15 +7,12 @@ using TogglTool.Api.Models;
 
 namespace TogglTool.Api
 {
-    public class WorkspacesApi
+    public class WorkspacesApi : TogglBaseRepository
     {
-        private TogglApi Api { get; set; }
-
         #region .ctor
         private WorkspacesApi(TogglApi togglApi)
-        {
-            Api = togglApi;
-        }
+            : base(togglApi)
+        { }
         #endregion
 
         #region Create

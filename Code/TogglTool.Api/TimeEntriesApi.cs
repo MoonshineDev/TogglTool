@@ -7,15 +7,12 @@ using TogglTool.Api.Models;
 
 namespace TogglTool.Api
 {
-    public class TimeEntriesApi
+    public class TimeEntriesApi : TogglBaseRepository
     {
-        private TogglApi Api { get; set; }
-
         #region .ctor
         private TimeEntriesApi(TogglApi togglApi)
-        {
-            Api = togglApi;
-        }
+            : base(togglApi)
+        { }
         #endregion
 
         #region Create

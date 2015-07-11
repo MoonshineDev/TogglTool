@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TogglTool.Api.Database.Repository;
 using TogglTool.Api.Models;
 
@@ -26,13 +27,17 @@ namespace TogglTool.Api
             {
                 case TogglApiMode.Offline:
                     return getOfflineData(_baseRepository);
+                case TogglApiMode.OfflinePrefered:
+                    return getOfflineData(_baseRepository) ?? getOnlineData(_togglApi);
                 case TogglApiMode.Online:
                     return getOnlineData(_togglApi);
+                case TogglApiMode.OnlinePrefered:
+                    return getOnlineData(_togglApi) ?? getOfflineData(_baseRepository);
                 case TogglApiMode.Optimized:
                     var entity = getOfflineData(_baseRepository);
                     // Refresh data if needed
                     if (entity == null || entity.ExpirationOn <= DateTime.UtcNow)
-                        entity = getOnlineData(_togglApi);
+                        entity = getOnlineData(_togglApi) ?? entity;
                     return entity;
                 default:
                     return null;
@@ -46,11 +51,18 @@ namespace TogglTool.Api
             {
                 case TogglApiMode.Offline:
                     return getOfflineData(_baseRepository);
+                case TogglApiMode.OfflinePrefered:
+                    return getOfflineData(_baseRepository) ?? getOnlineData(_togglApi);
                 case TogglApiMode.Online:
                     return getOnlineData(_togglApi);
+                case TogglApiMode.OnlinePrefered:
+                    return getOnlineData(_togglApi) ?? getOfflineData(_baseRepository);
                 case TogglApiMode.Optimized:
                     var list = getOfflineData(_baseRepository);
-                    // TODO: Refresh data if needed
+                    var date = DateTime.UtcNow;
+                    // Refresh data if needed
+                    if (list.Any(x => x.ExpirationOn >= date))
+                        list = getOnlineData(_togglApi) ?? list;
                     return list;
                 default:
                     return null;

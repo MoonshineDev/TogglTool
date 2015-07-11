@@ -94,7 +94,7 @@ namespace TogglTool.Api
                         return list;
                     default:
                         content = await response.Content.ReadAsStringAsync();
-                        throw new HttpRequestException("Unhandled HTTP status code " + (int)code + " " + response.StatusCode);
+                        throw new HttpRequestException("Unhandled HTTP status code " + (int)code + " " + response.StatusCode + "\nCONTENT:\n" + content);
                 }
             }
         }

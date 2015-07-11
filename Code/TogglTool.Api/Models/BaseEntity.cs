@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.OleDb;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TogglTool.Api.Models
 {
@@ -41,7 +36,7 @@ namespace TogglTool.Api.Models
                 }
                 else if (oldValue.Equals(newValue))
                     continue;
-                if (oldValue is IEnumerable<object>)
+                if (oldValue is IEnumerable<object> && newValue is IEnumerable<object>)
                 {
                     var oldCollection = oldValue as IEnumerable<object>;
                     var newCollection = newValue as IEnumerable<object>;

@@ -9,8 +9,7 @@ namespace TogglTool.Api.Models
         public DateTime? LastRequestedOn { get; set; }
         public DateTime? LastChangedOn { get; set; }
 
-        public WebApiEntity()
-            : base()
+        protected WebApiEntity()
         {
             FirstRequestedOn = DateTime.UtcNow;
         }

@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TogglTool.Api.Models;
 
 namespace TogglTool.Api.Database.Repository
 {
     public class BaseRepository : IBaseRepository
     {
-        public readonly DbContext _dbContext;
+        private readonly DbContext _dbContext;
 
         public BaseRepository(DbContext dbContext)
         {

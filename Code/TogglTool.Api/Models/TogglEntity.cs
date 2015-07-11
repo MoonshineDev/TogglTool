@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace TogglTool.Api.Models
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public abstract class TogglEntity : WebApiEntity
     {
         public int id { get; set; }

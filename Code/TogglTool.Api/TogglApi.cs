@@ -14,7 +14,7 @@ using TogglTool.Api.Models;
 
 namespace TogglTool.Api
 {
-    public class TogglApi
+    public class TogglApi : ITogglApi
     {
         private string ApiKey { get; set; }
         private readonly string _baseurl = "https://www.toggl.com/api/";

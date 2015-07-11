@@ -8,7 +8,7 @@ namespace TogglTool.Api
     public class WorkspacesApi : TogglBaseRepository
     {
         #region .ctor
-        public WorkspacesApi(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
+        public WorkspacesApi(ITogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
             : base(togglApi, baseRepository, mode)
         { }
         #endregion

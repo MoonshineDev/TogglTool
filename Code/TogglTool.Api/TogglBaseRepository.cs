@@ -9,18 +9,18 @@ namespace TogglTool.Api
 {
     public abstract class TogglBaseRepository
     {
-        private readonly TogglApi _togglApi;
+        private readonly ITogglApi _togglApi;
         private readonly IBaseRepository _baseRepository;
         private readonly TogglApiMode _mode;
 
-        protected TogglBaseRepository(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
+        protected TogglBaseRepository(ITogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
         {
             _togglApi = togglApi;
             _baseRepository = baseRepository;
             _mode = mode;
         }
 
-        protected T Query<T>(Func<TogglApi, T> getOnlineData, Func<IBaseRepository, T> getOfflineData)
+        protected T Query<T>(Func<ITogglApi, T> getOnlineData, Func<IBaseRepository, T> getOfflineData)
             where T : TogglEntity
         {
             switch (_mode)
@@ -44,7 +44,7 @@ namespace TogglTool.Api
             }
         }
 
-        protected List<T> Query<T>(Func<TogglApi, List<T>> getOnlineData, Func<IBaseRepository, List<T>> getOfflineData)
+        protected List<T> Query<T>(Func<ITogglApi, List<T>> getOnlineData, Func<IBaseRepository, List<T>> getOfflineData)
             where T : TogglEntity
         {
             switch (_mode)

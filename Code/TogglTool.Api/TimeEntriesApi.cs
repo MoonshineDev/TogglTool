@@ -9,7 +9,7 @@ namespace TogglTool.Api
     public class TimeEntriesApi : TogglBaseRepository
     {
         #region .ctor
-        public TimeEntriesApi(TogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
+        public TimeEntriesApi(ITogglApi togglApi, IBaseRepository baseRepository, TogglApiMode mode)
             : base(togglApi, baseRepository, mode)
         { }
         #endregion

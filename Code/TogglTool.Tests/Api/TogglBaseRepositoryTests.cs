@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
+using NUnit.Core.Extensibility;
 using NUnit.Framework;
 using TogglTool.Api;
 using TogglTool.Api.Database.Repository;
@@ -21,34 +23,94 @@ namespace TogglTool.Tests.Api
             _baseRepository = new Mock<IBaseRepository>(MockBehavior.Strict);
         }
 
-        [Test]
-        public void QuerySingleOnline_NotInDbNotInApi()
-        {
-            var sut = GetSUT(TogglApiMode.Online);
-            var entity = sut.TriggerQuerySingle<TogglFakeEntity>(
-                togglApi => null,
-                baseRepository => null
-                );
-            Assert.IsNull(entity);
+        public IEnumerable<TestCaseData> QuerySingleTestCases {
+            get
+            {
+                var dateToday = DateTime.UtcNow;
+                var dateYesterday = dateToday.AddDays(-1);
+                var dateTomorrow = dateToday.AddDays(1);
+                var entities = new List<TogglFakeEntity>
+                {
+                    null,
+                    new TogglFakeEntity { ExpirationOn = null },
+                    new TogglFakeEntity { ExpirationOn = dateYesterday },
+                    new TogglFakeEntity { ExpirationOn = dateTomorrow },
+                };
+                foreach (var onlineEntity in entities)
+                    foreach (var offlineEntity in entities)
+                        yield return new TestCaseData(TogglApiMode.Online, onlineEntity, offlineEntity, true);
+                foreach (var onlineEntity in entities)
+                    foreach (var offlineEntity in entities)
+                        yield return new TestCaseData(TogglApiMode.Offline, onlineEntity, offlineEntity, false);
+            }
         }
 
         [Test]
-        public void QuerySingleOnline_NotInDbIsInApi()
+        [TestCaseSource("QuerySingleTestCases")]
+        public void QuerySingle(TogglApiMode mode, TogglFakeEntity onlineResponse, TogglFakeEntity offlineResponse, bool expectedOnline)
         {
-            var sut = GetSUT(TogglApiMode.Online);
-            var entity = sut.TriggerQuerySingle<TogglFakeEntity>(
-                togglApi => new TogglFakeEntity(),
-                baseRepository => null
+            var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
+            var entity = sut.TriggerQuerySingle(
+                togglApi => onlineResponse,
+                baseRepository => offlineResponse
                 );
-            Assert.IsNotNull(entity);
+            var expected = expectedOnline ? onlineResponse : offlineResponse;
+            if (expected == null)
+                Assert.IsNull(entity);
+            else
+            {
+                Assert.IsNotNull(entity);
+                Assert.AreEqual(expected.id, entity.id);
+                Assert.AreEqual(expected.Name, entity.Name);
+            }
         }
 
-        private TogglFakeRepository GetSUT(TogglApiMode mode)
+        public IEnumerable<TestCaseData> QueryListTestCases
         {
-            return new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
+            get
+            {
+                var dateToday = DateTime.UtcNow;
+                var dateYesterday = dateToday.AddDays(-1);
+                var dateTomorrow = dateToday.AddDays(1);
+                var entities = new List<TogglFakeEntity>
+                {
+                    null,
+                    new TogglFakeEntity { ExpirationOn = null },
+                    new TogglFakeEntity { ExpirationOn = dateYesterday },
+                    new TogglFakeEntity { ExpirationOn = dateTomorrow },
+                };
+                Func<int[], List<TogglFakeEntity>> getList = ids => ids.Select(x => entities[x]).ToList();
+                yield return new TestCaseData(TogglApiMode.Online, null, null, null);
+                yield return new TestCaseData(TogglApiMode.Online, null, getList(new[] { 0, 1, 2, 3 }), null);
+                yield return new TestCaseData(TogglApiMode.Online, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.Online, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.Offline, null, null, null);
+                yield return new TestCaseData(TogglApiMode.Offline, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.Offline, getList(new[] { 0, 1, 2, 3 }), null, null);
+                yield return new TestCaseData(TogglApiMode.Offline, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+            }
         }
 
-        private class TogglFakeEntity : TogglEntity
+        [Test]
+        [TestCaseSource("QueryListTestCases")]
+        public void QueryList(TogglApiMode mode, List<TogglFakeEntity> onlineResponse, List<TogglFakeEntity> offlineResponse, List<TogglFakeEntity> expected)
+        {
+            var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
+            var entity = sut.TriggerQueryList(
+                togglApi => onlineResponse,
+                baseRepository => offlineResponse
+                );
+            if (expected == null)
+                Assert.IsNull(entity);
+            else
+            {
+                Assert.IsNotNull(entity);
+                //Assert.AreEqual(expected.id, entity.id);
+                //Assert.AreEqual(expected.Name, entity.Name);
+            }
+        }
+
+        public class TogglFakeEntity : TogglEntity
         {
             public string Name { get; set; }
         }

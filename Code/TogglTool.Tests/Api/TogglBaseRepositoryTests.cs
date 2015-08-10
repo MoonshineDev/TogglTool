@@ -42,6 +42,27 @@ namespace TogglTool.Tests.Api
                 foreach (var onlineEntity in entities)
                     foreach (var offlineEntity in entities)
                         yield return new TestCaseData(TogglApiMode.Offline, onlineEntity, offlineEntity, false);
+                foreach (var onlineEntity in entities)
+                {
+                    yield return new TestCaseData(TogglApiMode.OfflinePrefered, onlineEntity, entities[0], true);
+                    yield return new TestCaseData(TogglApiMode.OfflinePrefered, onlineEntity, entities[1], false);
+                    yield return new TestCaseData(TogglApiMode.OfflinePrefered, onlineEntity, entities[2], false);
+                    yield return new TestCaseData(TogglApiMode.OfflinePrefered, onlineEntity, entities[3], false);
+                }
+                foreach (var offlineEntity in entities)
+                {
+                    yield return new TestCaseData(TogglApiMode.OnlinePrefered, entities[0], offlineEntity, false);
+                    yield return new TestCaseData(TogglApiMode.OnlinePrefered, entities[1], offlineEntity, true);
+                    yield return new TestCaseData(TogglApiMode.OnlinePrefered, entities[2], offlineEntity, true);
+                    yield return new TestCaseData(TogglApiMode.OnlinePrefered, entities[3], offlineEntity, true);
+                }
+                foreach (var onlineEntity in entities)
+                {
+                    yield return new TestCaseData(TogglApiMode.Optimized, onlineEntity, entities[0], true);
+                    yield return new TestCaseData(TogglApiMode.Optimized, onlineEntity, entities[1], onlineEntity != null);
+                    yield return new TestCaseData(TogglApiMode.Optimized, onlineEntity, entities[2], onlineEntity != null);
+                    yield return new TestCaseData(TogglApiMode.Optimized, onlineEntity, entities[3], false);
+                }
             }
         }
 
@@ -65,6 +86,19 @@ namespace TogglTool.Tests.Api
             }
         }
 
+        [Test]
+        public void QuerySingle_InvalidApiMode()
+        {
+            const TogglApiMode mode = (TogglApiMode)(-1);
+            var entityResponse = new TogglFakeEntity();
+            var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
+            var entity = sut.TriggerQuerySingle(
+                togglApi => entityResponse,
+                baseRepository => entityResponse
+                );
+            Assert.IsNull(entity);
+        }
+
         public IEnumerable<TestCaseData> QueryListTestCases
         {
             get
@@ -84,10 +118,18 @@ namespace TogglTool.Tests.Api
                 yield return new TestCaseData(TogglApiMode.Online, null, getList(new[] { 0, 1, 2, 3 }), null);
                 yield return new TestCaseData(TogglApiMode.Online, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
                 yield return new TestCaseData(TogglApiMode.Online, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OnlinePrefered, null, null, null);
+                yield return new TestCaseData(TogglApiMode.OnlinePrefered, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OnlinePrefered, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OnlinePrefered, getList(new[] { 0, 1, 2 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2 }));
                 yield return new TestCaseData(TogglApiMode.Offline, null, null, null);
                 yield return new TestCaseData(TogglApiMode.Offline, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
                 yield return new TestCaseData(TogglApiMode.Offline, getList(new[] { 0, 1, 2, 3 }), null, null);
                 yield return new TestCaseData(TogglApiMode.Offline, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OfflinePrefered, null, null, null);
+                yield return new TestCaseData(TogglApiMode.OfflinePrefered, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OfflinePrefered, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.OfflinePrefered, getList(new[] { 0, 1, 2 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
             }
         }
 
@@ -108,6 +150,19 @@ namespace TogglTool.Tests.Api
                 //Assert.AreEqual(expected.id, entity.id);
                 //Assert.AreEqual(expected.Name, entity.Name);
             }
+        }
+
+        [Test]
+        public void QueryList_InvalidApiMode()
+        {
+            const TogglApiMode mode = (TogglApiMode)(-1);
+            var entityResponse = new List<TogglFakeEntity>();
+            var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
+            var entity = sut.TriggerQueryList(
+                togglApi => entityResponse,
+                baseRepository => entityResponse
+                );
+            Assert.IsNull(entity);
         }
 
         public class TogglFakeEntity : TogglEntity

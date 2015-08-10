@@ -8,7 +8,6 @@ namespace TogglTool.Api.Models
     public class Project : TogglEntity
     {
         #region .ctor
-        [SuppressMessage("ReSharper", "DoNotCallOverridableMethodsInConstructor")]
         public Project()
         {
             TimeEntryList = new List<TimeEntry>();
@@ -34,7 +33,7 @@ namespace TogglTool.Api.Models
         public int cid { get; set; }
         public Client Client { get; set; }
 
-        public virtual IList<TimeEntry> TimeEntryList { get; set; }
+        public virtual IList<TimeEntry> TimeEntryList { get; private set; }
         #endregion
     }
 }

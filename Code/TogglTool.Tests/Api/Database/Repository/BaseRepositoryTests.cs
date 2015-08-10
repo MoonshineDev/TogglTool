@@ -83,9 +83,7 @@ namespace TogglTool.Tests.Api.Database.Repository
                 new Workspace {id = 1}
             };
             Assert.Catch(() => _sut.AddOrUpdate(list));
-            var entity = _inmemory.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(0, _inmemory.Count());
-            Assert.IsNull(entity);
         }
 
         [Test]

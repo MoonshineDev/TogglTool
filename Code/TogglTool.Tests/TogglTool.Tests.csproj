@@ -76,6 +76,8 @@
     <Compile Include="Api\Export\VoidExportTests.cs" />
     <Compile Include="Api\Database\Repository\BaseRepositoryTests.cs" />
     <Compile Include="Api\Models\BaseEntityTests.cs" />
+    <Compile Include="Api\Models\ClientTests.cs" />
+    <Compile Include="Api\Models\ProjectTests.cs" />
     <Compile Include="Api\Models\TogglEntityTests.cs" />
     <Compile Include="Api\Models\WebApiEntityTests.cs" />
     <Compile Include="Api\TogglBaseRepositoryTests.cs" />

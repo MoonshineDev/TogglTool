@@ -29,6 +29,24 @@ namespace TogglTool.Tests.Api.Database
         }
 
         [Test]
+        public void Ctor_InitializeWithSpecifiedConnectionString()
+        {
+            var expected = "Server=.;Database=foobar;Trusted_Connection=True;";
+            var sut = new DatabaseContext(expected);
+            var actual = sut.Database.Connection.ConnectionString;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Ctor_InitializeWithSettingsByDefault()
+        {
+            var expected = TogglTool.Api.Properties.Settings.Default.ConnectionString;
+            var sut = new DatabaseContext();
+            var actual = sut.Database.Connection.ConnectionString;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void ContextOnlyContainsBaseEntity()
         {
             var list = _types

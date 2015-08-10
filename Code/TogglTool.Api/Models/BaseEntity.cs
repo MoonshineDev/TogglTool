@@ -11,7 +11,7 @@ namespace TogglTool.Api.Models
         public DateTime? LogChangedOn { get; set; }
         public string LogChangedBy { get; set; }
 
-        public BaseEntity()
+        protected BaseEntity()
         {
             // TODO: Move LogCreatedOn update to DatabaseContext
             // TODO: Set LogCreatedBy based on SecurityContext
@@ -29,13 +29,11 @@ namespace TogglTool.Api.Models
             {
                 var oldValue = prop.GetValue(this);
                 var newValue = prop.GetValue(newData);
-                if (oldValue == null)
-                {
-                    if (newValue == null)
-                        continue;
-                }
-                else if (oldValue.Equals(newValue))
+                if (newValue == null)
                     continue;
+                if (oldValue != null && oldValue.Equals(newValue))
+                    continue;
+                // TODO: Use prop.PropertyType.IsGenericType instead
                 if (oldValue is IEnumerable<object> && newValue is IEnumerable<object>)
                 {
                     var oldCollection = oldValue as IEnumerable<object>;

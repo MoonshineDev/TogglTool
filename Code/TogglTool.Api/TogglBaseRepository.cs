@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TogglTool.Api.Database.Repository;
@@ -59,9 +58,11 @@ namespace TogglTool.Api
                     return getOnlineData(_togglApi) ?? getOfflineData(_baseRepository);
                 case TogglApiMode.Optimized:
                     var list = getOfflineData(_baseRepository);
+                    if (list == null)
+                        return getOnlineData(_togglApi);
                     var date = DateTime.UtcNow;
                     // Refresh data if needed
-                    if (list.Any(x => x.ExpirationOn >= date))
+                    if (list.Where(x => x != null).Any(x => x.ExpirationOn >= date))
                         list = getOnlineData(_togglApi) ?? list;
                     return list;
                 default:

@@ -92,10 +92,11 @@ namespace TogglTool.Tests.Api
             const TogglApiMode mode = (TogglApiMode)(-1);
             var entityResponse = new TogglFakeEntity();
             var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
-            var entity = sut.TriggerQuerySingle(
-                togglApi => entityResponse,
-                baseRepository => entityResponse
-                );
+            Func<ITogglApi, TogglFakeEntity> getOnline = x => entityResponse;
+            Func<IBaseRepository, TogglFakeEntity> getOffline = x => entityResponse;
+            var entity = sut.TriggerQuerySingle(getOnline, getOffline);
+            Assert.AreEqual(entityResponse, getOnline(null));
+            Assert.AreEqual(entityResponse, getOffline(null));
             Assert.IsNull(entity);
         }
 
@@ -130,6 +131,10 @@ namespace TogglTool.Tests.Api
                 yield return new TestCaseData(TogglApiMode.OfflinePrefered, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
                 yield return new TestCaseData(TogglApiMode.OfflinePrefered, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
                 yield return new TestCaseData(TogglApiMode.OfflinePrefered, getList(new[] { 0, 1, 2 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                yield return new TestCaseData(TogglApiMode.Optimized, null, null, null);
+                yield return new TestCaseData(TogglApiMode.Optimized, null, getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
+                //yield return new TestCaseData(TogglApiMode.Optimized, getList(new[] { 0, 1, 2, 3 }), null, getList(new[] { 0, 1, 2, 3 }));
+                //yield return new TestCaseData(TogglApiMode.Optimized, getList(new[] { 0, 1, 2 }), getList(new[] { 0, 1, 2, 3 }), getList(new[] { 0, 1, 2, 3 }));
             }
         }
 
@@ -158,10 +163,11 @@ namespace TogglTool.Tests.Api
             const TogglApiMode mode = (TogglApiMode)(-1);
             var entityResponse = new List<TogglFakeEntity>();
             var sut = new TogglFakeRepository(_togglApi.Object, _baseRepository.Object, mode);
-            var entity = sut.TriggerQueryList(
-                togglApi => entityResponse,
-                baseRepository => entityResponse
-                );
+            Func<ITogglApi, List<TogglFakeEntity>> getOnline = x => entityResponse;
+            Func<IBaseRepository, List<TogglFakeEntity>> getOffline = x => entityResponse;
+            var entity = sut.TriggerQueryList(getOnline, getOffline);
+            Assert.AreEqual(entityResponse, getOnline(null));
+            Assert.AreEqual(entityResponse, getOffline(null));
             Assert.IsNull(entity);
         }
 

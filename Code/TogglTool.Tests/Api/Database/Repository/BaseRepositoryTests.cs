@@ -153,6 +153,32 @@ namespace TogglTool.Tests.Api.Database.Repository
             Assert.AreEqual("test 1b", entity2B.name);
             Assert.AreEqual("test 2b", entity2C.name);
         }
+
+        [Test]
+        public void AddOrUpdate_UpdateList()
+        {
+            var list1 = new List<Workspace>();
+            var list2 = new List<Workspace>();
+            var client = new Client();
+            list1.Add(new Workspace { id = 1, name = "test 1" });
+            list2.Add(new Workspace { id = 1, name = "test 1" });
+            list2.First().ClientList.Add(client);
+
+            _sut.AddOrUpdate(list1);
+            var entity1 = _inmemory.FirstOrDefault(x => x.id == 1);
+            Assert.AreEqual(1, _inmemory.Count());
+            Assert.NotNull(entity1);
+            Assert.AreEqual("test 1", entity1.name);
+            Assert.IsEmpty(entity1.ClientList);
+
+            _sut.AddOrUpdate(list2);
+            var entity2 = _inmemory.FirstOrDefault(x => x.id == 1);
+            Assert.AreEqual(1, _inmemory.Count());
+            Assert.NotNull(entity2);
+            Assert.AreEqual("test 1", entity2.name);
+            Assert.IsNotEmpty(entity1.ClientList);
+            Assert.AreEqual(1, entity1.ClientList.Count());
+        }
         #endregion
 
         #region GetByIds
@@ -202,11 +228,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 1 });
             _inmemory.Add(new Workspace { id = 2 });
             var list = _sut.GetByIds<Workspace>(new[] { 1, 2 }).ToArray();
-            var entity1 = list.FirstOrDefault(x => x.id == 1);
-            var entity2 = list.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(2, list.Count());
-            Assert.IsNotNull(entity1);
-            Assert.IsNotNull(entity2);
+            Assert.IsTrue(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
         }
 
         [Test]
@@ -215,11 +239,10 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 1 });
             _inmemory.Add(new Workspace { id = 2 });
             var list = _sut.GetByIds<Workspace>(new[] { 1, 2, 3 }).ToArray();
-            var entity1 = list.FirstOrDefault(x => x.id == 1);
-            var entity2 = list.FirstOrDefault(x => x.id == 1);
             Assert.AreEqual(2, list.Count());
-            Assert.IsNotNull(entity1);
-            Assert.IsNotNull(entity2);
+            Assert.IsTrue(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsFalse(list.Any(x => x.id == 3));
         }
         #endregion
 
@@ -253,9 +276,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(null, x => true).ToArray();
             Assert.AreEqual(3, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 1));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+            Assert.IsTrue(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsTrue(list.Any(x => x.id == 3));
         }
 
         [Test]
@@ -275,9 +298,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(x => true).ToArray();
             Assert.AreEqual(3, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 1));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+            Assert.IsTrue(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsTrue(list.Any(x => x.id == 3));
         }
 
         [Test]
@@ -297,8 +320,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(x => x.id >= 2).ToArray();
             Assert.AreEqual(2, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+            Assert.IsFalse(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsTrue(list.Any(x => x.id == 3));
         }
 
         [Test]
@@ -309,8 +333,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(x => x.id >= 2, null).ToArray();
             Assert.AreEqual(2, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+            Assert.IsFalse(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsTrue(list.Any(x => x.id == 3));
         }
 
         [Test]
@@ -321,8 +346,9 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(x => x.id >= 2, x => true).ToArray();
             Assert.AreEqual(2, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 3));
+            Assert.IsFalse(list.Any(x => x.id == 1));
+            Assert.IsTrue(list.Any(x => x.id == 2));
+            Assert.IsTrue(list.Any(x => x.id == 3));
         }
 
         [Test]
@@ -341,8 +367,10 @@ namespace TogglTool.Tests.Api.Database.Repository
             _inmemory.Add(new Workspace { id = 2 });
             _inmemory.Add(new Workspace { id = 3 });
             var list = _sut.Where<Workspace>(x => x.id >= 2, x => x.id <= 2).ToArray();
+            var entity = list.FirstOrDefault();
             Assert.AreEqual(1, list.Count());
-            Assert.IsNotNull(list.FirstOrDefault(x => x.id == 2));
+            Assert.IsNotNull(entity);
+            Assert.AreEqual(2, entity.id);
         }
         #endregion
     }
